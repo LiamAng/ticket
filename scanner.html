@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QR Scanner</title>
+    <script src="/html5-qrcode.min.js"></script>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: sans-serif;
+            max-width: 500px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #f0f4f8;
+            color: #1a2a3a;
+        }
+
+        h2 {
+            margin-bottom: 16px;
+            color: #1565c0;
+            font-size: 1.2rem;
+            border-bottom: 2px solid #1565c0;
+            padding-bottom: 8px;
+        }
+
+        video,
+        #qr-reader,
+        #photo-preview {
+            width: 100%;
+            display: block;
+            border: 2px solid #90caf9;
+            border-radius: 6px;
+        }
+
+        #photo-preview {
+            display: none;
+        }
+
+        select {
+            font-size: 14px;
+            padding: 8px 10px;
+            margin-top: 8px;
+            width: 100%;
+            border: 1px solid #90caf9;
+            border-radius: 4px;
+            background: #fff;
+            color: #1a2a3a;
+            cursor: pointer;
+            outline: none;
+        }
+
+        select:focus {
+            border-color: #1565c0;
+        }
+
+        button {
+            font-size: 14px;
+            padding: 9px 18px;
+            margin-top: 8px;
+            margin-right: 6px;
+            cursor: pointer;
+            background: #1565c0;
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            transition: background 0.15s;
+        }
+
+        button:hover:not(:disabled) {
+            background: #0d47a1;
+        }
+
+        button:disabled {
+            background: #90caf9;
+            cursor: not-allowed;
+        }
+
+        p {
+            margin: 10px 0 6px;
+            font-size: 14px;
+            color: #444;
+        }
+
+        .screen {
+            display: none;
+        }
+
+        .screen.active {
+            display: block;
+        }
+
+        #loading-spinner {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 40px 0;
+            gap: 14px;
+            color: #1565c0;
+            font-size: 14px;
+        }
+
+        .spinner {
+            width: 32px;
+            height: 32px;
+            border: 3px solid #bbdefb;
+            border-top-color: #1565c0;
+            border-radius: 50%;
+            animation: spin 0.7s linear infinite;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        #black-warning {
+            margin-top: 8px;
+            font-size: 13px;
+            color: #e65100;
+            display: none;
+        }
+
+        #qr-status,
+        #photo-status {
+            background: #e3f2fd;
+            border-left: 3px solid #1565c0;
+            padding: 8px 12px;
+            border-radius: 0 4px 4px 0;
+            font-size: 13px;
+            color: #1a2a3a;
+        }
+
+        #preview-wrap {
+            margin-top: 10px;
+            border-radius: 6px;
+            overflow: hidden;
+        }
+
+        .btn-group {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 6px;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div id="screen-select" class="screen active">
+        <h2>Select Camera</h2>
+
+        <div id="loading-spinner">
+            <div class="spinner"></div>
+            <span id="loading-label">Detecting cameras...</span>
+        </div>
+
+        <div id="camera-ui" style="display:none;">
+            <select id="camera-select"></select>
+
+            <div id="preview-wrap">
+                <video id="preview-video" autoplay playsinline muted></video>
+            </div>
+
+            <div id="black-warning">Camera not working? Try switching to another camera.</div>
+            <div class="btn-group">
+                <button id="btn-confirm">Start Scanning</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="screen-scan" class="screen">
+        <h2>QR Scanner</h2>
+
+        <div id="qr-phase">
+            <div id="qr-reader"></div>
+            <p id="qr-status">Scanning for QR code...</p>
+        </div>
+
+        <div id="photo-phase" style="display:none;">
+            <video id="live-video" autoplay playsinline></video>
+            <img id="photo-preview" alt="Captured photo">
+            <div class="btn-group">
+                <button id="btn-photo">Take Photo</button>
+                <button id="btn-retake" style="display:none;">Retake Photo</button>
+                <button id="btn-done" style="display:none;">Done</button>
+            </div>
+            <p id="photo-status"></p>
+        </div>
+    </div>
+
+    <script src="/scanner.js"></script>
+</body>
+
+</html>
